@@ -1,44 +1,5 @@
 package main
 
-/*import (
-	"net/http/httptest"
-	"strconv"
-	"testing"
-)
-
-func TestGetHttp(t *testing.T) {
-	var tcs = []struct {
-		desc string
-		id   int
-		out  MoviesData
-	}{
-		{desc: "SUCCESS", id: 1, out: MoviesData{
-			Code:   200,
-			Status: "SUCCESS",
-			Data: &Data{Movie: &Movies{
-				Id:       1,
-				Name:     "Silicon Valley",
-				Genre:    "Comedy",
-				Rating:   4.6,
-				Plot:     "Richard a programmer creates an app called the Pied Piper and tries to getinvestors for it. Meanwhile, five other programmers struggle to make their mark in SiliconValley.",
-				Released: true,
-			}},
-		}},
-	}
-
-	for i, tt := range tcs {
-		url := "/movie/" + strconv.Itoa(tt.id)
-		req := httptest.NewRequest("GET", url, nil)
-		wr := httptest.NewRecorder()
-
-		getOneMovie(wr, req)
-		if tt.out.Code != wr.Code {
-			t.Errorf("TestCase[%v] Expected: \t%v\nGot: \t%v\n", i, tt.out, wr.Code)
-		}
-	}
-
-}*/
-
 import (
 	"encoding/json"
 	"fmt"
@@ -56,25 +17,28 @@ func TestGetMovie(t *testing.T) {
 		expOutput MoviesData
 		expError  error
 	}{
-		//{
-		//	target: "/movies/$",
-		//	expOutput: MoviesData{
-		//		Error: "No movie found with the id"},
-		//},
+		{
+			target: "/movies/$",
+			expOutput: MoviesData{
+				Error: "No movie found with the id"},
+		},
 		{
 			target: "/movie",
-			expOutput: MoviesData{
+			expOutput: MoviesData{Code: 200, Status: "SUCCESS",
 				Data: &Data{Movie: &Movies{1, "Silicon Valley", "Comedy", 4.5, "Richard a programmer creates an app called the Pied Piper and tries to getinvestors for it. Meanwhile, five other programmers struggle to make their mark in SiliconValley.", true}},
 			},
 		},
 	}
 
-	for _, tt := range testCases {
+	for i, tt := range testCases {
 
 		r := httptest.NewRequest(http.MethodGet, tt.target, nil)
 		w := httptest.NewRecorder()
 		params := map[string]string{
 			"id": "1",
+		}
+		if i == 0 {
+			params["id"] = "12345"
 		}
 		r = mux.SetURLVars(r, params)
 		getOneMovie(w, r)
